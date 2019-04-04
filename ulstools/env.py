@@ -12,12 +12,13 @@ from pathlib import Path
 import win32com.client
 
 
-def create_shortcut(script_prefix):
+def create_shortcut(script_prefix, title=None):
     """Create a desktop shortcut that runs a script in the currently active
     conda environment""" 
     home = Path.home()
     desktop = home / 'Desktop'
-    link_path = desktop / '%s.lnk' % script_prefix
+    link_filename = ('%s.lnk' % (title or script_prefix))
+    link_path = desktop / link_filename
 
     # for some reason CONDA_ROOT is not set, so get root from executable path
     anaconda_python = Path(os.environ['CONDA_PYTHON_EXE'])
@@ -27,7 +28,7 @@ def create_shortcut(script_prefix):
     pythonw = anaconda_root / 'pythonw.exe'
     cwp = anaconda_root / 'cwp.py'
     pythonw_env = envdir / 'pythonw.exe'
-    script = envdir / 'Scripts' / '%s-script.py' % script_prefix
+    script = envdir / 'Scripts' / ('%s-script.py' % script_prefix)
 
     assert cwp.is_file()
     assert envdir.is_dir()
@@ -38,8 +39,8 @@ def create_shortcut(script_prefix):
     args = '%s %s %s %s' % (cwp, envdir, pythonw_env, script)
 
     shell = win32com.client.Dispatch("WScript.Shell")
-    shortcut = shell.CreateShortCut(link_path)
-    shortcut.Targetpath = pythonw
+    shortcut = shell.CreateShortCut(str(link_path))
+    shortcut.Targetpath = str(pythonw)
     shortcut.arguments = args
     shortcut.save()
 
