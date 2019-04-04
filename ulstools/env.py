@@ -12,7 +12,7 @@ from pathlib import Path
 import win32com.client
 
 
-def create_shortcut(script_prefix, title=None):
+def make_shortcut(script_prefix, title=None):
     """Create a desktop shortcut that runs a script in the currently active
     conda environment""" 
     home = Path.home()
@@ -45,7 +45,7 @@ def create_shortcut(script_prefix, title=None):
     shortcut.save()
 
 
-def _already_running(script_prefix):
+def already_running(script_prefix):
     """Try to figure out if the script is already running"""
     script_name = '%s-script.py' % script_prefix
     nprocs = 0
