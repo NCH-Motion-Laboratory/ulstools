@@ -12,6 +12,10 @@ from pathlib import Path
 import win32com.client
 
 
+def hello():
+    print('hello')
+
+
 def make_shortcut(script_prefix, title=None):
     """Create a desktop shortcut that runs a script in the currently active
     conda environment""" 
