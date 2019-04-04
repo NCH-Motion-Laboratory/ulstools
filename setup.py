@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='ulstools',
-      version='0.10.2',
+      version='0.10.3',
       description='Miscellaneous tools for ULS',
       author='Jussi Nurminen',
       author_email='jnu@iki.fi',
