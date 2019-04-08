@@ -14,4 +14,8 @@ setup(name='ulstools',
       license='GPLv3',
       url='https://github.com/jjnurminen/ulstools',
       packages=find_packages(),
+      entry_points={
+            'console_scripts': ['pdfmerger=ulstools.apps.pdfmerger:main']
+                  }
+      include_package_data=True,
       )
