@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-PDF file merger
+Simple GUI for merging PDF files
 
 @author: Jussi (jnu@iki.fi)
 """
 
 import sys
 
-from pkg_resources import resource_filename, resource_stream
+from pkg_resources import resource_stream
 from PyQt5 import QtWidgets, uic
 
 from PyPDF2 import PdfFileMerger, utils
@@ -35,11 +35,12 @@ class MergeDialog(QtWidgets.QMainWindow):
         self.btnClearAll.clicked.connect(self._clear_list)
         self.btnQuit.clicked.connect(self.close)
         self._files = list()
+        self._pdf_filter = 'PDF files (*.pdf)'
 
     def _add_pdfs(self):
         pdfs = QtWidgets.QFileDialog.getOpenFileNames(None, 'Load PDF file',
                                                       '',
-                                                      'PDF files (*.pdf)')[0]
+                                                      self._pdf_filter)[0]
         for pdf in pdfs:
             if pdf not in self._files:
                 self._files.append(pdf)
@@ -69,7 +70,7 @@ class MergeDialog(QtWidgets.QMainWindow):
 
         outfn = QtWidgets.QFileDialog.getSaveFileName(None, 'Save PDF file',
                                                       '',
-                                                      'PDF files (*.pdf)')[0]
+                                                      self._pdf_filter)[0]
         if outfn:
             try:
                 merger.write(outfn)
@@ -81,7 +82,6 @@ class MergeDialog(QtWidgets.QMainWindow):
 
 
 def main():
-    print(__name__)
     app = QtWidgets.QApplication(sys.argv)
     md = MergeDialog()
     md.show()
