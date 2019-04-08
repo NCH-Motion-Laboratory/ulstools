@@ -10,7 +10,12 @@ import sys
 from pkg_resources import resource_stream
 from PyQt5 import QtWidgets, uic
 
+from ulstools.env import make_shortcut
 from PyPDF2 import PdfFileMerger, utils
+
+
+def make_my_shortcut():
+    make_shortcut('pdfmerger', title='PDF merge tool')
 
 
 def message_dialog(msg):
