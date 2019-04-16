@@ -12,11 +12,9 @@ def check_hetu(hetu):
     """ This checks validity of a Finnish social security number (hetu) """
     if len(hetu) != 11 or hetu[6] not in '+-A':
         return False
-    try:
-        dd, mm = int(hetu[:2]), int(hetu[2:4])
+    try:  
+        datetime.datetime.strptime(hetu[:6], '%d%m%y')
     except ValueError:
-        return False
-    if not (0 <= dd <= 31 and 1 <= mm <= 12):
         return False
     # check 'checksum'
     chrs = "0123456789ABCDEFHJKLMNPRSTUVWXY"
