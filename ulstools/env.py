@@ -7,9 +7,13 @@ environment utilities
 
 import psutil
 import os
+import logging
 from pathlib import Path
 
 import win32com.client
+
+
+logger = logging.getLogger(__name__)
 
 
 def make_shortcut(script_prefix, title=None):
@@ -33,11 +37,8 @@ def make_shortcut(script_prefix, title=None):
     pythonw_env = envdir / 'pythonw.exe'
     script = envdir / 'Scripts' / ('%s-script.py' % script_prefix)
 
-    assert cwp.is_file()
-    assert envdir.is_dir()
-    assert pythonw.is_file()
-    assert pythonw_env.is_file()
-    assert script.is_file()
+    if not script.is_file():
+        raise FileNotFoundError('cannot find script file at %s' % script)
 
     args = '%s %s %s %s' % (cwp, envdir, pythonw_env, script)
 
@@ -58,6 +59,7 @@ def already_running(script_prefix):
             if cmdline:
                 if 'python' in cmdline[0] and len(cmdline) > 1:
                     if script_name in cmdline[1]:
+                        logging.debug('found running process %s' % cmdline[1])
                         nprocs += 1
                         if nprocs == 2:
                             return True
