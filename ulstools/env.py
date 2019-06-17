@@ -16,7 +16,9 @@ def make_shortcut(script_prefix, title=None):
     """Create a desktop shortcut that runs a script in the currently active
     conda environment. Designed to work with setuptools console_scripts
     entry points. Windows only.""" 
-    home = Path.home()
+    
+    # home = Path.home()  # Py3 pathtools only
+    home = Path(os.path.expanduser('~'))
     desktop = home / 'Desktop'
     link_filename = ('%s.lnk' % (title or script_prefix))
     link_path = desktop / link_filename
