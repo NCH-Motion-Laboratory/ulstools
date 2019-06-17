@@ -59,13 +59,15 @@ def already_running(script_prefix):
             if cmdline:
                 if 'python' in cmdline[0] and len(cmdline) > 1:
                     if script_name in cmdline[1]:
-                        logging.debug('found running process %s' % cmdline[1])
+                        logger.debug('found running process %s' % cmdline[1])
                         nprocs += 1
                         if nprocs == 2:
+                            logger.debug('found 2 running processes (or more)')
                             return True
         # catch NoSuchProcess for procs that disappear inside loop
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             pass
+    logger.debug('found 1 process or less')
     return False
 
 
