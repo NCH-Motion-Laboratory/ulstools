@@ -7,6 +7,7 @@ FIXME: move tests to ulstools
 @author: jussi (jnu@iki.fi)
 """
 
+import os.path as op
 import pytest
 import logging
 import re
@@ -14,10 +15,13 @@ import re
 from ulstools.configdot import (parse_config, update_config, dump_config,
                                 RE_COMMENT, RE_SECTION_HEADER, RE_VAR_DEF,
                                 get_description, _parse_config)
-from utils import _file_path
 
 
 logger = logging.getLogger(__name__)
+
+
+def _file_path(filename):
+    return op.join('testdata', filename)
 
 
 def test_re_comment():
