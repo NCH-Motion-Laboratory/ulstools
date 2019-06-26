@@ -38,7 +38,7 @@ def make_shortcut(script_prefix, title=None):
     script = envdir / 'Scripts' / ('%s-script.py' % script_prefix)
 
     if not script.is_file():
-        raise FileNotFoundError('cannot find script file at %s' % script)
+        raise OSError('cannot find script file at %s' % script)
 
     args = '%s %s %s %s' % (cwp, envdir, pythonw_env, script)
 
