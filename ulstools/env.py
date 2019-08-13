@@ -16,15 +16,15 @@ import win32com.client
 logger = logging.getLogger(__name__)
 
 
-def make_shortcut(script_prefix, title=None):
+def make_shortcut(script_path, title):
     """Create a desktop shortcut that runs a script in the currently active
-    conda environment. Designed to work with setuptools console_scripts
-    entry points. Windows only.""" 
+    conda environment. script is a path including the package directory,
+    e.g. mypackage/gui/mygui.py""" 
     
     # home = Path.home()  # Py3 pathtools only
     home = Path(os.path.expanduser('~'))
     desktop = home / 'Desktop'
-    link_filename = ('%s.lnk' % (title or script_prefix))
+    link_filename = '%s.lnk' % title
     link_path = desktop / link_filename
 
     # for some reason CONDA_ROOT is not set, so get root from executable path
@@ -35,7 +35,7 @@ def make_shortcut(script_prefix, title=None):
     pythonw = anaconda_root / 'pythonw.exe'
     cwp = anaconda_root / 'cwp.py'
     pythonw_env = envdir / 'pythonw.exe'
-    script = envdir / 'Scripts' / ('%s-script.py' % script_prefix)
+    script = envdir / 'Lib' / 'site-packages' / script_path
 
     if not script.is_file():
         raise OSError('cannot find script file at %s' % script)
