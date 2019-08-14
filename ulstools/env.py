@@ -7,6 +7,7 @@ environment utilities
 
 import psutil
 import os
+import os.path as op
 import logging
 from pathlib import Path
 
@@ -16,10 +17,10 @@ import win32com.client
 logger = logging.getLogger(__name__)
 
 
-def make_shortcut(script_path, title):
+def make_shortcut(pkgname, script_path, title):
     """Create a desktop shortcut that runs a script in the currently active
-    conda environment. script is a path including the package directory,
-    e.g. mypackage/gui/mygui.py""" 
+    conda environment. pkgname is the package name and script is the path relative
+    to the package directory, e.g. gui/mygui.py""" 
     
     # home = Path.home()  # Py3 pathtools only
     home = Path(os.path.expanduser('~'))
@@ -32,14 +33,27 @@ def make_shortcut(script_path, title):
     envdir = Path(os.environ['CONDA_PREFIX'])
     anaconda_root = anaconda_python.parent
 
-    pythonw = anaconda_root / 'pythonw.exe'
+    pythonw = anaconda_root / 'pythonw.exe'  # the base interpreter
     cwp = anaconda_root / 'cwp.py'
-    pythonw_env = envdir / 'pythonw.exe'
-    script = envdir / 'Lib' / 'site-packages' / script_path
+    pythonw_env = envdir / 'pythonw.exe'  # the env-specific interpreter
+    # tentative script path
+    script = envdir / 'Lib' / 'site-packages' / pkgname / script_path
 
     if not script.is_file():
-        raise OSError('cannot find script file at %s' % script)
-
+        # may be a 'development' install (e.g. pip -e)
+        # hack: try reading from egg link
+        logger.debug('trying to read egg link')
+        egg_link_file = envdir / 'Lib' / 'site-packages' / (pkgname + '.egg-link')
+        if egg_link_file.exists():
+            with egg_link_file.open() as f:
+                pkg_path = Path(f.read().splitlines()[0])
+            if pkg_path.is_dir():
+                script = pkg_path / pkgname / script_path
+                if not script.is_file():
+                    raise OSError('cannot find script file under site-packages or egg link')
+            else:
+                raise OSError('path in egg link %s not found' % pkg_path)
+    
     args = '%s %s %s %s' % (cwp, envdir, pythonw_env, script)
 
     shell = win32com.client.Dispatch("WScript.Shell")
