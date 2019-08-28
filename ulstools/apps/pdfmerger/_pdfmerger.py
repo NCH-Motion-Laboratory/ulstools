@@ -15,7 +15,7 @@ from PyPDF2 import PdfFileMerger, utils
 
 
 def make_my_shortcut():
-    make_shortcut('pdfmerger', title='PDF merge tool')
+    make_shortcut('ulstools', 'apps/pdfmerger/pdfmerger.py' 'PDF merge tool')
 
 
 def message_dialog(msg):
