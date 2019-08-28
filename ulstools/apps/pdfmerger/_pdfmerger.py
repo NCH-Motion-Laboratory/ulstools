@@ -15,7 +15,7 @@ from PyPDF2 import PdfFileMerger, utils
 
 
 def make_my_shortcut():
-    make_shortcut('ulstools', 'apps/pdfmerger/pdfmerger.py' 'PDF merge tool')
+    make_shortcut('ulstools', 'apps/pdfmerger/pdfmerger.py', 'PDF merge tool')
 
 
 def message_dialog(msg):
@@ -31,7 +31,7 @@ def message_dialog(msg):
 class MergeDialog(QtWidgets.QMainWindow):
 
     def __init__(self):
-        super().__init__()
+        super(MergeDialog, self).__init__()
         # load user interface made with designer
         uifile = resource_stream('ulstools', 'apps/pdfmerger/pdfmerger.ui')
         uic.loadUi(uifile, self)
