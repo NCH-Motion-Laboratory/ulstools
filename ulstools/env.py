@@ -11,17 +11,26 @@ import os.path as op
 import logging
 from pathlib import Path
 
-import win32com.client
-
 
 logger = logging.getLogger(__name__)
+
+
+
+
+
+
 
 
 def make_shortcut(pkgname, script_path, title):
     """Create a desktop shortcut that runs a script in the currently active
     conda environment. pkgname is the package name and script is the path relative
     to the package directory, e.g. gui/mygui.py""" 
-    
+    try:
+        import win32com.client
+    except ImportError:
+        logger.warning('not on Windows system, cannot create shortcut (yet)')
+        return
+
     # home = Path.home()  # Py3 pathtools only
     home = Path(os.path.expanduser('~'))
     desktop = home / 'Desktop'
