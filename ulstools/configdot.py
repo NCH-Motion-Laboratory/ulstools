@@ -17,7 +17,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-# regexes
+# regexes for parsing
 RE_ALPHANUMERIC = r'\w+$'  # at least 1 alphanumeric char
 RE_WHITESPACE = r'\s*$'  # empty or whitespace
 # match line comment; group 1 will be the comment
@@ -30,38 +30,37 @@ RE_SECTION_HEADER = r'\s*\[([\w-]+)\]\s*'
 
 
 def _simple_match(r, s):
+    """Match regex r against string s"""
     return bool(re.match(r, s))
 
 
-def is_comment(s):
+def _is_comment(s):
+    """Check if s is a comment"""
     return _simple_match(RE_COMMENT, s)
 
 
-def is_proper_varname(s):
+def _is_proper_varname(s):
+    """Check if s is an acceptable variable name"""
     return _simple_match(RE_ALPHANUMERIC, s)
 
 
-def is_whitespace(s):
+def _is_whitespace(s):
+    """Check if s is whitespace only"""
     return _simple_match(RE_WHITESPACE, s)
 
 
-def parse_var_def(s):
+def _parse_var_def(s):
     """Match (possibly partial) var definition. Return varname,
     val tuple if successful"""
     m = re.match(RE_VAR_DEF, s)
     if m:
         varname, val = m.group(1).strip(), m.group(2).strip()
-        if is_proper_varname(varname):
+        if _is_proper_varname(varname):
             return varname, val
     return None, None
 
 
-def is_var_def(s):
-    varname, val = parse_var_def(s)
-    return varname is not None
-
-
-def parse_section_header(s):
+def _parse_section_header(s):
     """Match section headers of form [header] and return header as str"""
     m = re.match(RE_SECTION_HEADER, s)
     return m.group(1) if m else None
@@ -176,8 +175,8 @@ def _parse_config(lines):
         # every line is either: comment, section header, variable definition,
         # continuation of variable definition, or whitespace
 
-        secname = parse_section_header(li)
-        item_name, val = parse_var_def(li)
+        secname = _parse_section_header(li)
+        item_name, val = _parse_var_def(li)
 
         # new section
         if secname:
@@ -193,16 +192,16 @@ def _parse_config(lines):
             if collecting_def:  # did not finish previous definition
                 raise ValueError('could not evaluate definition at line %d' % lnum)
             elif not current_section:
-                raise ValueError('item definition outside of section '
-                                 'on line %d' % lnum)
+                raise ValueError(
+                    'item definition outside of section ' 'on line %d' % lnum
+                )
             elif item_name in current_section:
                 raise ValueError('duplicate definition on line %d' % lnum)
             try:
                 val_eval = ast.literal_eval(val)
                 # if eval is successful, record the variable
                 comment = ' '.join(_comments)
-                item = ConfigItem(comment=comment, name=item_name,
-                                  value=val_eval)
+                item = ConfigItem(comment=comment, name=item_name, value=val_eval)
                 setattr(current_section, item_name, item)
                 _comments = list()
                 _def_lines = list()
@@ -212,14 +211,14 @@ def _parse_config(lines):
                 _def_lines.append(val)
                 continue
 
-        elif is_comment(li):
+        elif _is_comment(li):
             if collecting_def:  # did not finish definition
                 raise ValueError('could not evaluate definition at line %d' % lnum)
             m = re.match(RE_COMMENT, li)
             cmnt = m.group(1)
             _comments.append(cmnt)
 
-        elif is_whitespace(li):
+        elif _is_whitespace(li):
             if collecting_def:  # did not finish definition
                 raise ValueError('could not evaluate definition at line %d' % lnum)
 
@@ -232,8 +231,7 @@ def _parse_config(lines):
                 val_new = ''.join(_def_lines)
                 val_eval = ast.literal_eval(val_new)
                 comment = ' '.join(_comments)
-                item = ConfigItem(comment=comment,
-                                  name=collecting_def, value=val_eval)
+                item = ConfigItem(comment=comment, name=collecting_def, value=val_eval)
                 setattr(current_section, collecting_def, item)
                 _comments = list()
                 _def_lines = list()
@@ -247,8 +245,9 @@ def _parse_config(lines):
     return config
 
 
-def update_config(cfg, cfg_new, create_new_sections=True,
-                  create_new_items=True, update_comments=False):
+def update_config(
+    cfg, cfg_new, create_new_sections=True, create_new_items=True, update_comments=False
+):
     """Update existing Config instance from another.
     create_new_items can be boolean OR a list of section names
     into which new items are allowed to be created."""
@@ -274,8 +273,7 @@ def update_config(cfg, cfg_new, create_new_sections=True,
                     # item does not exist and can be created
                     setattr(sec_old, itname, item)
                 else:
-                    logger.warning('unknown config item: [%s]/%s'
-                                   % (secname, itname))
+                    logger.warning('unknown config item: [%s]/%s' % (secname, itname))
         elif create_new_sections:
             # create nonexisting section anew
             setattr(cfg, secname, sec)
@@ -283,9 +281,9 @@ def update_config(cfg, cfg_new, create_new_sections=True,
             logger.warning('unknown config section: %s' % secname)
 
 
-
 def dump_config(cfg):
     """Produce text version of Config instance that can be read back"""
+
     def _gen_dump(cfg):
         sects = sorted(cfg, key=lambda tup: tup[0])  # sort by name
         for k, (sectname, sect) in enumerate(sects):
@@ -298,4 +296,5 @@ def dump_config(cfg):
             for itemname, item in items:
                 yield '# %s' % item._comment
                 yield item.item_def
+
     return u'\n'.join(_gen_dump(cfg))
