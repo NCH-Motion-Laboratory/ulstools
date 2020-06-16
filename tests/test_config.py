@@ -12,9 +12,16 @@ import pytest
 import logging
 import re
 
-from ulstools.configdot import (parse_config, update_config, dump_config,
-                                RE_COMMENT, RE_SECTION_HEADER, RE_VAR_DEF,
-                                get_description, _parse_config)
+from ulstools.configdot import (
+    parse_config,
+    update_config,
+    dump_config,
+    RE_COMMENT,
+    RE_SECTION_HEADER,
+    RE_VAR_DEF,
+    get_description,
+    _parse_config,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -27,16 +34,15 @@ def _file_path(filename):
 def test_re_comment():
     """Test comment regex on various comments"""
     cmt_string = 'this is a comment'
-    for leading in ['', ' ', ' '*5]:
+    for leading in ['', ' ', ' ' * 5]:
         for comment_sign in '#;':
             for ws1 in ['', ' ']:
-                for trailing in [' '*5, ' '*3, '']:
-                    cmt = (leading + comment_sign + ws1 + cmt_string +
-                           trailing)
+                for trailing in [' ' * 5, ' ' * 3, '']:
+                    cmt = leading + comment_sign + ws1 + cmt_string + trailing
                     assert re.match(RE_COMMENT, cmt)
                     # the regex group will include trailing whitespace
                     # so test group extraction without whitespace
-                    cmt = (leading + comment_sign + ws1 + cmt_string)
+                    cmt = leading + comment_sign + ws1 + cmt_string
                     m = re.match(RE_COMMENT, cmt)
                     assert m.group(1) == cmt_string
 
@@ -105,8 +111,7 @@ def test_config_update():
     assert 'section3' not in cfg_
     assert 'newvar' in cfg_.section2
     cfg_ = parse_config(fn)
-    update_config(cfg_, cfg_new, create_new_sections=True,
-                  create_new_items=False)
+    update_config(cfg_, cfg_new, create_new_sections=True, create_new_items=False)
     assert 'section3' in cfg_
     assert 'newvar' not in cfg_.section2
     cfg_ = parse_config(fn)

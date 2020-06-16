@@ -23,13 +23,11 @@ def message_dialog(msg):
     dlg = QtWidgets.QMessageBox()
     dlg.setWindowTitle('Message')
     dlg.setText(msg)
-    dlg.addButton(QtWidgets.QPushButton('Ok'),
-                  QtWidgets.QMessageBox.YesRole)
+    dlg.addButton(QtWidgets.QPushButton('Ok'), QtWidgets.QMessageBox.YesRole)
     dlg.exec_()
 
 
 class MergeDialog(QtWidgets.QMainWindow):
-
     def __init__(self):
         super(MergeDialog, self).__init__()
         # load user interface made with designer
@@ -43,9 +41,9 @@ class MergeDialog(QtWidgets.QMainWindow):
         self._pdf_filter = 'PDF files (*.pdf)'
 
     def _add_pdfs(self):
-        pdfs = QtWidgets.QFileDialog.getOpenFileNames(None, 'Load PDF file',
-                                                      '',
-                                                      self._pdf_filter)[0]
+        pdfs = QtWidgets.QFileDialog.getOpenFileNames(
+            None, 'Load PDF file', '', self._pdf_filter
+        )[0]
         for pdf in pdfs:
             if pdf not in self._files:
                 self._files.append(pdf)
@@ -69,21 +67,19 @@ class MergeDialog(QtWidgets.QMainWindow):
             try:
                 merger.append(pdf)
             except utils.PdfReadError:
-                message_dialog('Cannot read %s - possibly an encrypted file'
-                               % pdf)
+                message_dialog('Cannot read %s - possibly an encrypted file' % pdf)
                 return
 
-        outfn = QtWidgets.QFileDialog.getSaveFileName(None, 'Save PDF file',
-                                                      '',
-                                                      self._pdf_filter)[0]
+        outfn = QtWidgets.QFileDialog.getSaveFileName(
+            None, 'Save PDF file', '', self._pdf_filter
+        )[0]
         if outfn:
             try:
                 merger.write(outfn)
                 message_dialog('Successfully wrote %s' % outfn)
 
             except IOError:
-                message_dialog('Cannot write %s, file may already be open'
-                               % outfn)
+                message_dialog('Cannot write %s, file may already be open' % outfn)
 
 
 def main():

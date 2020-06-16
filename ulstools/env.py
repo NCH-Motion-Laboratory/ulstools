@@ -15,16 +15,10 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
-
-
-
-
-
-
 def make_shortcut(pkgname, script_path, title):
     """Create a desktop shortcut that runs a script in the currently active
     conda environment. pkgname is the package name and script is the path relative
-    to the package directory, e.g. gui/mygui.py""" 
+    to the package directory, e.g. gui/mygui.py"""
     try:
         import win32com.client
     except ImportError:
@@ -59,10 +53,12 @@ def make_shortcut(pkgname, script_path, title):
             if pkg_path.is_dir():
                 script = pkg_path / pkgname / script_path
                 if not script.is_file():
-                    raise OSError('cannot find script file under site-packages or egg link')
+                    raise OSError(
+                        'cannot find script file under site-packages or egg link'
+                    )
             else:
                 raise OSError('path in egg link %s not found' % pkg_path)
-    
+
     args = '%s %s %s %s' % (cwp, envdir, pythonw_env, script)
 
     shell = win32com.client.Dispatch("WScript.Shell")
@@ -92,7 +88,3 @@ def already_running(script_prefix):
             pass
     logger.debug('found 1 process or less')
     return False
-
-
-
-

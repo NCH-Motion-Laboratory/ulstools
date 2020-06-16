@@ -12,7 +12,7 @@ def check_hetu(hetu):
     """ This checks validity of a Finnish social security number (hetu) """
     if len(hetu) != 11 or hetu[6] not in '+-A':
         return False
-    try:  
+    try:
         datetime.datetime.strptime(hetu[:6], '%d%m%y')
     except ValueError:
         return False
@@ -37,4 +37,3 @@ def age_from_hetu(hetu, d1=None):
     yr += {'+': 1800, '-': 1900, 'A': 2000}[hetu[6]]
     d0 = datetime.date(yr, month, day)
     return d1.year - d0.year - ((d1.month, d1.day) < (d0.month, d0.day))
-

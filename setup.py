@@ -6,17 +6,20 @@
 from setuptools import setup, find_packages
 
 
-setup(name='ulstools',
-      version='0.10.4',
-      description='Miscellaneous tools for ULS',
-      author='Jussi Nurminen',
-      author_email='jnu@iki.fi',
-      license='GPLv3',
-      url='https://github.com/jjnurminen/ulstools',
-      packages=find_packages(),
-      entry_points={
-            'console_scripts': ['pdfmerger=ulstools.apps.pdfmerger._pdfmerger:main',
-                                'pdfmerger_make_shortcut=ulstools.apps.pdfmerger._pdfmerger:make_my_shortcut']
-                  },
-      include_package_data=True,
-      )
+setup(
+    name='ulstools',
+    version='0.10.4',
+    description='Miscellaneous tools for ULS',
+    author='Jussi Nurminen',
+    author_email='jnu@iki.fi',
+    license='GPLv3',
+    url='https://github.com/jjnurminen/ulstools',
+    packages=find_packages(),
+    entry_points={
+        'console_scripts': [
+            'pdfmerger=ulstools.apps.pdfmerger._pdfmerger:main',
+            'pdfmerger_make_shortcut=ulstools.apps.pdfmerger._pdfmerger:make_my_shortcut',
+        ]
+    },
+    include_package_data=True,
+)

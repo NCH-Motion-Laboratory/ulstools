@@ -10,4 +10,3 @@ from ulstools.apps.pdfmerger import _pdfmerger
 
 if __name__ == '__main__':
     _pdfmerger.main()
-
