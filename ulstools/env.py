@@ -16,9 +16,23 @@ logger = logging.getLogger(__name__)
 
 
 def make_shortcut(pkgname, script_path, title):
-    """Create a desktop shortcut that runs a script in the currently active
-    conda environment. pkgname is the package name and script is the path relative
-    to the package directory, e.g. gui/mygui.py"""
+    """Create a desktop shortcut for a Python script under conda.
+    
+    Create a shortcut that runs a script in the currently active conda
+    environment. Only works in Windows. Needs to be called from the desired
+    conda environment.
+
+    Parameters
+    ----------
+    pkgname : str
+        Name of the package.
+    script_path : str
+        Path to script, relative to the package directory. For example:
+        'gui/mygui.py'.
+    title : str
+        Title for the desktop shortcut.
+    """
+
     try:
         import win32com.client
     except ImportError:
@@ -69,7 +83,15 @@ def make_shortcut(pkgname, script_path, title):
 
 
 def already_running(script_prefix):
-    """Try to figure out if the script is already running"""
+    """Try to figure out if a Python script is already running.
+
+    Assumes that script is named 'script_prefix-script.py'.
+    
+    Parameters
+    ----------
+    script_prefix : str
+        The prefix.
+    """
     script_name = '%s-script.py' % script_prefix
     nprocs = 0
     for proc in psutil.process_iter():
