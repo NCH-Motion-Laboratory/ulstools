@@ -8,7 +8,7 @@ Simple GUI for merging PDF files
 import sys
 
 from pkg_resources import resource_stream
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtWidgets, uic, QtCore
 
 from ulstools.env import make_shortcut
 from PyPDF2 import PdfFileMerger, utils
@@ -19,7 +19,7 @@ def make_my_shortcut():
 
 
 def message_dialog(msg):
-    """ Show message with an 'OK' button. """
+    """Show message with an 'OK' button."""
     dlg = QtWidgets.QMessageBox()
     dlg.setWindowTitle('Message')
     dlg.setText(msg)
@@ -28,37 +28,43 @@ def message_dialog(msg):
 
 
 class MergeDialog(QtWidgets.QMainWindow):
+
+    _pdf_filter = 'PDF files (*.pdf)'
+
     def __init__(self):
+
         super(MergeDialog, self).__init__()
         # load user interface made with designer
         uifile = resource_stream('ulstools', 'apps/pdfmerger/pdfmerger.ui')
         uic.loadUi(uifile, self)
-        self.btnAddFiles.clicked.connect(self._add_pdfs)
+        self.btnAddFiles.clicked.connect(self._add_files)
         self.btnMerge.clicked.connect(self._merge)
-        self.btnClearAll.clicked.connect(self._clear_list)
-        self.btnQuit.clicked.connect(self.close)
-        self._files = list()
-        self._pdf_filter = 'PDF files (*.pdf)'
+        self.btnRemoveFile.clicked.connect(self.listFiles.rm_current_item)
+        self.listFiles.setDragDropMode(self.listFiles.InternalMove)
+        self.actionQuit.triggered.connect(self.close)
 
-    def _add_pdfs(self):
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Delete:
+            self.listFiles.rm_current_item()
+        event.accept()
+
+    @property
+    def _files(self):
+        """Return list of filenames from the list widget"""
+        return [it.text for it in self.listFiles.items]
+
+    def _add_files(self):
+        """Add files to list widget"""
         pdfs = QtWidgets.QFileDialog.getOpenFileNames(
-            None, 'Load PDF file', '', self._pdf_filter
+            None, 'Load PDF file', '', MergeDialog._pdf_filter
         )[0]
         for pdf in pdfs:
             if pdf not in self._files:
-                self._files.append(pdf)
-
-        self._update_list()
-
-    def _update_list(self):
-        self.lblFiles.setText(u'\n'.join(self._files))
-
-    def _clear_list(self):
-        self._files = list()
-        self._update_list()
+                self.listFiles.add_item(pdf)
 
     def _merge(self):
-        if not self._files:
+        if len(self._files) < 2:
+            message_dialog('Load at least two files first')
             return
 
         merger = PdfFileMerger(strict=False)
@@ -71,13 +77,12 @@ class MergeDialog(QtWidgets.QMainWindow):
                 return
 
         outfn = QtWidgets.QFileDialog.getSaveFileName(
-            None, 'Save PDF file', '', self._pdf_filter
+            None, 'Save PDF file', '', MergeDialog._pdf_filter
         )[0]
         if outfn:
             try:
                 merger.write(outfn)
                 message_dialog('Successfully wrote %s' % outfn)
-
             except IOError:
                 message_dialog('Cannot write %s, file may already be open' % outfn)
 
