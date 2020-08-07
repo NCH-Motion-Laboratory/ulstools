@@ -122,7 +122,10 @@ class ConfigContainer(object):
     def __getattr__(self, attr):
         """Returns an item. For ConfigItem instances, the item value is
         returned. This gets the value directly by the syntax section.item"""
-        item = self._items[attr]
+        try:
+            item = self._items[attr]
+        except KeyError:
+            raise AttributeError
         return item.value if isinstance(item, ConfigItem) else item
 
     def __getitem__(self, item):
