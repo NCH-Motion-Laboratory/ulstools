@@ -7,7 +7,7 @@ environment utilities
 
 import psutil
 import os
-import os.path as op
+import tempfile
 import logging
 from pathlib import Path
 
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def make_shortcut(pkgname, script_path, title):
     """Create a desktop shortcut for a Python script under conda.
-    
+
     Create a shortcut that runs a script in the currently active conda
     environment. Only works in Windows. Needs to be called from the desired
     conda environment.
@@ -86,7 +86,7 @@ def already_running(script_prefix):
     """Try to figure out if a Python script is already running.
 
     Assumes that script is named 'script_prefix-script.py'.
-    
+
     Parameters
     ----------
     script_prefix : str
@@ -110,3 +110,25 @@ def already_running(script_prefix):
             pass
     logger.debug('found 1 process or less')
     return False
+
+
+def named_tempfile(suffix=None):
+    """Return a name for a temporary file.
+
+    Does not open the file. Cross-platform. Replaces tempfile.NamedTemporaryFile
+    which behaves strangely on Windows.
+
+    Parameters
+    ----------
+    suffix : str | None
+        Filename suffix, e.g. '.dat'. If None, no suffix.
+    """
+    LEN = 12  # length of basename
+    if suffix is None:
+        suffix = ''
+    elif suffix[0] != '.':
+        raise ValueError('Invalid suffix, must start with dot')
+    basename = os.urandom(LEN)  # get random bytes
+    # convert to hex string
+    basename = basename.hex()
+    return tempfile.gettempdir() / Path(basename).with_suffix(suffix)
