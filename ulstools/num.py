@@ -6,6 +6,7 @@ Miscellaneous numerical utilities.
 """
 
 import datetime
+import random
 
 
 def check_hetu(hetu):
@@ -65,3 +66,23 @@ def age_from_hetu(hetu, d1=None):
     yr += {'+': 1800, '-': 1900, 'A': 2000}[hetu[6]]
     d0 = datetime.date(yr, month, day)
     return d1.year - d0.year - ((d1.month, d1.day) < (d0.month, d0.day))
+
+
+def random_ssn():
+    """Generate a random Finnish SSN.
+
+    Returns:
+    --------
+    ssn : str
+        The SSN.
+    """
+    d = random.randint(1, 28)
+    m = random.randint(1, 12)
+    y = random.randint(0, 99)
+    chr = random.choice('A+-')
+    n = random.randint(0, 999)
+    ssn = f'{d:02d}{m:02d}{y:02d}{chr}{n:03d}'
+    # calculate the SSN checksum (last character)
+    chrs = "0123456789ABCDEFHJKLMNPRSTUVWXY"
+    chk = chrs[(int(ssn[:6] + ssn[7:10])) % 31]
+    return ssn + chk
