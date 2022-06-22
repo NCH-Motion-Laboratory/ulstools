@@ -36,8 +36,7 @@ def make_shortcut(pkgname, script_path, title):
     try:
         import win32com.client
     except ImportError:
-        logger.warning('not on Windows system, cannot create shortcut (yet)')
-        return
+        raise RuntimeError('Currently, shortcuts can only be created on Windows')
 
     # home = Path.home()  # Py3 pathtools only
     home = Path(os.path.expanduser('~'))
