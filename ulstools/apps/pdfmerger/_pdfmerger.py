@@ -11,7 +11,7 @@ from pkg_resources import resource_stream
 from PyQt5 import QtWidgets, uic, QtCore
 
 from ulstools.env import make_shortcut
-from PyPDF2 import PdfFileMerger, utils
+from PyPDF2 import PdfFileMerger, errors
 
 
 def make_my_shortcut():
@@ -72,7 +72,7 @@ class MergeDialog(QtWidgets.QMainWindow):
         for pdf in self._files:
             try:
                 merger.append(pdf)
-            except utils.PdfReadError:
+            except errors.PdfReadError:
                 message_dialog('Cannot read %s - possibly an encrypted file' % pdf)
                 return
 
