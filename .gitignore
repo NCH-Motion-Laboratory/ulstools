@@ -1,2 +1,4 @@
 *.pyc
 .vscode
+.idea/*
+ulstools.egg-info/*
