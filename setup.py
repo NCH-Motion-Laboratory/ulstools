@@ -13,7 +13,7 @@ setup(
     author='Jussi Nurminen',
     author_email='jnu@iki.fi',
     license='GPLv3',
-    url='https://github.com/jjnurminen/ulstools',
+    url='https://github.com/NCH-Motion-Laboratory/ulstools',
     packages=find_packages(),
     entry_points={
         'console_scripts': [
